@@ -1,0 +1,6 @@
+/__pycache__
+additions.txt
+.env
+utils/__pycache__
+*/__pycache__
+*__pycache__

@@ -1,0 +1,13 @@
+fastapi
+uvicorn[standard]
+boto3
+pydantic
+PyPDF2
+pandas
+openpyxl
+python-multipart
+pgvector
+httpx
+beautifulsoup4
+duckduckgo-search
+mangum

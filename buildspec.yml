@@ -1,0 +1,20 @@
+version: 0.2
+env:
+    variables:
+      TAG_NAME: latest
+phases:
+  pre_build:
+    commands:
+      - echo Build started on `date`
+      - echo Logging in to Amazon ECR....
+      - docker login -u AWS -p $(aws ecr get-login-password --region ap-south-1) 552672526249.dkr.ecr.ap-south-1.amazonaws.com
+  build:
+    commands:
+      - echo Building The Docker Image....
+      - docker build --build-arg BASE_IMAGE=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$BASE_REPO_NAME:latest -t $ECR_REPO_NAME:$TAG_NAME .
+      - docker tag $ECR_REPO_NAME:$TAG_NAME $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO_NAME:$TAG_NAME
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO_NAME:$TAG_NAME
+      - aws ecr list-images --repository-name $ECR_REPO_NAME --filter tagStatus=UNTAGGED --query 'imageIds[*]' --output text | while read imageId; do aws ecr batch-delete-image --repository-name $ECR_REPO_NAME --image-ids imageDigest=$imageId; done
+  post_build:
+    commands:
+      - echo Build completed on `date`
